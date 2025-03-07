@@ -1,11 +1,17 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { AuthContext } from "../components/auth/AuthContext";
+import { useAuth } from "../components/auth/AuthContext";
 
 const PrivateRoute = () => {
-  const { isAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated, loading } = useAuth();
 
-  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+  // Show nothing while checking authentication
+  if (loading) {
+    return null; // The main loading screen will handle this
+  }
+
+  // Navigate to login if not authenticated
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" />;
 };
 
 export default PrivateRoute;

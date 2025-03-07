@@ -14,7 +14,6 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated: false,
   });
 
-
   const updateAuthState = useCallback((updates) => {
     setAuthState((prev) => ({ ...prev, ...updates }));
   }, []);
@@ -22,7 +21,11 @@ export const AuthProvider = ({ children }) => {
   const handleError = useCallback(
     (error) => {
       const errorMessage = error.response?.data?.message || "An error occurred";
-      updateAuthState({ error: errorMessage, user: null });
+      updateAuthState({
+        error: errorMessage,
+        user: null,
+        isAuthenticated: false,
+      });
       localStorage.removeItem(TOKEN_KEY);
       setToken(null);
     },
@@ -64,21 +67,21 @@ export const AuthProvider = ({ children }) => {
         if (data?.token) {
           localStorage.setItem(TOKEN_KEY, data.token);
           setToken(data.token);
-          updateAuthState({
-            user: data.user,
-            isAuthenticated: true,
-          });
+          await getUser(); // Get fresh user data after authentication
           return { success: true, user: data.user };
         }
         throw new Error("No token received");
       } catch (error) {
         handleError(error);
-        return { success: false, error: error.message };
+        return {
+          success: false,
+          error: error.response?.data?.message || error.message,
+        };
       } finally {
         updateAuthState({ loading: false });
       }
     },
-    [updateAuthState, handleError]
+    [updateAuthState, handleError, getUser]
   );
 
   const login = useCallback(
@@ -118,6 +121,7 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         register,
+        refreshUser: getUser,
       }}
     >
       {children}
