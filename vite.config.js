@@ -7,4 +7,10 @@ export default defineConfig({
   plugins: [
     tailwindcss(),
     react()],
+  server: {
+    historyApiFallback: true,  // Ensures proper SPA routing
+  },
+  build: {
+    outDir: "dist",
+  }
 })
