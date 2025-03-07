@@ -4,7 +4,7 @@ function isMobile() {
     return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
-let apiURL = 'https://exp-backend-qhcv.onrender.com'
+let apiURL = 'https://exp-backend-qhcv.onrender.com/api'
 
 
 const api = axios.create({
